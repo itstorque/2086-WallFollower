@@ -4,7 +4,7 @@ This is the MATLAB code for the project. Current desired structure:
 
 ## Code Structure:
 
- * Abstract Interface FieldObject - Levi
+ * Abstract Interface FieldObject
 	 * Method draw
 	 * Abstract Variable pos
 
@@ -16,7 +16,7 @@ This is the MATLAB code for the project. Current desired structure:
 	 * Variable Positions
 	 * Method addPosition
 		 * Input: pos
-	
+
  * Abstract Class Robot extends Field Object
 	 * Variable Theta
 	 * Variable Velocity
@@ -35,9 +35,9 @@ This is the MATLAB code for the project. Current desired structure:
  * Abstract Class Controller
 	 * Abstract Method Algorithm
 		 * Input: Robot, walls
-		 * Output: Pseduo-force
+		 * Output: Pseudo-force
 	 * Abstract Method Plant
-		 * Input: Pseduo-force
+		 * Input: Pseudo-force
 		 * Output: DeltaTheta
  	 * Method canDrive
 		 * Input (Robot) Robot, List(FieldObject) walls
