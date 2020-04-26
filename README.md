@@ -25,8 +25,8 @@ and the angle of turn.
 
 #### Robot
 
-The robot is regarded as a dynamic [Field Object](#Field Objects) that roams the field
-based on the logic built inside the [Controller](#Controller) class. The Robot class 
+The robot is regarded as a dynamic [Field Object](#field-objects) that roams the field
+based on the logic built inside the [Controller](#controller) class. The Robot class 
 contains methods relevant to simulating and processing sensor data, including simulating
 measurements and splicing the input array.
 
@@ -43,15 +43,19 @@ manners within a feedback controller. The different point clouds are used to wei
 distance away from the wall in a manner that would make responding to obstacles in a 
 field more smooth.
 
-#### Visualization
-
-
-
 #### Field Objects
 
+All physical objects in this simulation are considered field objects, whether they are
+the robot itself or walls in the field. These objects can be static or dynamic, and can
+have any polygonal shape. The LIDAR distances are measured incident to these objects.
 
+#### Visualization
 
-### Project Status
+All [Field Objects](#field-objects) can be presented in a user-friendly manner by the
+visualization class. It showcases a field map with the distance of 1 coordinate 
+corresponding to a distance of 1 meter.
+
+## Project Status
 
 All needed abstract classes are complete. Some implementations still need to 
 be implemented as seperate files, but mostly, methods now need to be filled in.
