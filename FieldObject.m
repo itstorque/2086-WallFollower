@@ -1,10 +1,12 @@
-classdef FieldObject
+classdef FieldObject < matlab.mixin.Heterogeneous
     properties
-        pos
+        pos;
+        internalFigure;
     end
     
     methods (Abstract)
-        figure = draw(obj, figure)
+        obj = drawInit(obj);
+        obj = drawUpdate(obj);
     end
 end
 

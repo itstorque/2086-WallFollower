@@ -1,32 +1,27 @@
 ackerman_noise_factor = 4;
 ackerman_noise = @(angle) angle+ackerman_noise_factor*(rand()-0.5);
 
-walls = [[2.5,7.5, 7.5,2.5];];
+w1 = Wall(2.5,7.5,7.5,2.5);
+walls = [w1];
 
-coords = [0, 0, pi/4];%[x, y, theta]
 v = 0.1;
-head = [v*sin(coords(3)) v*cos(coords(3))];
+bot = PointBot([0,0],45,v);
+head = [v*sin(bot.theta*pi/180) v*cos(bot.theta*pi/180)];
 
-k = plot(coords(1), coords(2), 'ro');
+objects = InitField([walls bot]);
 hold on
-
-for wall_idx = 1:size(walls, 1)
-
-    wall = walls(wall_idx, :);
-
-    plot(wall([1 3]), wall([2 4]), 'b-')
-
-end
-
-h = quiver(coords(1),coords(2),head(1),head(2), 'MaxHeadSize', 5);
-axis([-10  10    -10  10], 'square')
+h = quiver(bot.pos(1),bot.pos(2),head(1),head(2), 'MaxHeadSize', 5);
+hold off
 
 for i = 0:10000
-    coords(1:2) = coords(1:2) + head;
-    coords(3) = coords(3) + ackerman_noise(pi/90);
-    head = [v*sin(coords(3)) v*cos(coords(3))];
-    set(h,'xdata',coords(1),'ydata',coords(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
-    set(k,'xdata',coords(1),'ydata',coords(2))
+    bot = objects(end);
+    bot.pos = bot.pos + head;
+    bot.theta = bot.theta + 180/pi*ackerman_noise(pi/90);
+    head = [v*sin(bot.theta*180/pi) v*cos(bot.theta*180/pi)];
+    set(h,'xdata',bot.pos(1),'ydata',bot.pos(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
+    
+    objects(end) = bot;
+    objects = UpdateField(objects);
     pause(0.1)
 
     %collision checking stuff
@@ -36,13 +31,13 @@ for i = 0:10000
         wall = walls(wall_idx, :);
 
         v1 = [head(1)-coords(1), head(2)-coords(2)];
-        v2 = [wall(3)-wall(1), wall(4)-wall(2)];
+        v2 = [wall.x2-wall.x1, wall.y2-wall.y1];
 
         cross_prod = cross([v1, 0], [v2, 0]);
 
         if (cross_prod(3) ~= 0)
 
-            dp = wall(1:2)-coords(1:2);
+            dp = wall.point1-coords(1:2);
 
             lambda1 = cross([dp, 0], [v2, 0]) / cross_prod;
             lambda2 = cross([dp, 0], [v1, 0]) / cross_prod;
