@@ -13,9 +13,14 @@ classdef Path < FieldObject
             obj.positions = [obj.positions pos];
         end
         
-        function figure = draw(figureI)
+        function obj = drawInit(obj)
             figure = figureI;
         end
+        
+        function obj = drawUpdate(obj)
+            
+        end
+        
     end
 end
 

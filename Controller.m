@@ -20,7 +20,7 @@ classdef (Abstract) Controller
             obj.time = 0;
         end
         
-        function [robot, walls, didCollide, figure, obj] = run(obj, robot, wall, time, doDraw)
+        function [robot, walls, path, didCollide, figure, obj] = run(obj, robot, wall, time, doDraw)
             robot = obj.robot;
             walls = obj.walls;
             didCollide = obj.didCollide;
@@ -59,7 +59,7 @@ classdef (Abstract) Controller
 
         end
         
-        function [robot, walls, didCollide, figure, obj] = check_collisions(obj, robot, head, walls)
+        function [robot, walls, path, didCollide, figure, obj] = check_collisions(obj, robot, head, walls)
             
             walls = obj.walls;
 
