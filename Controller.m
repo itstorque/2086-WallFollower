@@ -34,7 +34,7 @@ classdef Controller
                     track = right;
                 end
 
-                error = average(mink(track, 10));
+                error = mean(mink(track, 10));
 
                 error = error + robot.kfront*mink(front, 10);
 
@@ -46,7 +46,7 @@ classdef Controller
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 robot.pos = robot.pos + head
-                robot.theta = robot.theta + v*tan(steering_angle)/robot.length;
+                robot.theta = robot.theta + v*tan(steering_angle)/robot.size(1);
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 obj.didCollide = false;
@@ -58,13 +58,17 @@ classdef Controller
 
         function angle = PID(obj, robot, error)
 
-            error_int = sum(robot.errors(end-robot.int_lookup:end));
+            error_int = sum(robot.errors(max(1,end-robot.int_lookup):end));
 
-            error_dv = sum(robot.errors(end) - robot.errors(end-robot.dv_lookup));
+            if (length(robot.errors) > 2)
+              error_dv = sum(robot.errors(end) - robot.errors(max(1,end-robot.dv_lookup)))/10;
+            else
+              error_dv = 0
+            end
 
-            obj.errors = [robot.errors error];
+            robot.errors = [robot.errors error];
 
-            angle = kp*error + ki*error_int + kd*error_dv;
+            angle = robot.kp*error + robot.ki*error_int + robot.kd*error_dv;
 
         end
 

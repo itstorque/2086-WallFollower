@@ -12,6 +12,9 @@ classdef Robot < FieldObject
         kp = 0.8;
         kd = 0.1;
         ki = 0.01;
+
+        int_lookup=10;
+        dv_lookup=10;
     end
 
     methods (Abstract)
@@ -31,7 +34,7 @@ classdef Robot < FieldObject
             obj.ackerman_noise = @(angle) angle+obj.ackerman_noise_factor*(rand()-0.5);
         end
 
-        function [distances] = findDistanceCloud(obj, walls)
+        function [distances] = findDistanceCloud(obj, walls, wallCount)
             wallCount = length(walls);
             distances = [];
             for i = obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)
@@ -40,7 +43,7 @@ classdef Robot < FieldObject
                 c = cos(phi);
                 s = sin(phi);
                 for j = 1:wallCount
-                    wall = walls(j);
+                    wall = walls{1, j};
                     range = NaN;
                     [x,y] = intersections([wall.x1 wall.x2], [wall.y1,wall.y2], [obj.pos(1) (obj.pos(1)+c*1e15)], [obj.pos(2) (obj.pos(2)+s*1e15)],1);
                     if(~isempty(x))
