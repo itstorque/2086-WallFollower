@@ -20,7 +20,7 @@ classdef (Abstract) Controller
             obj.time = 0;
         end
         
-        function [robot, walls, path, didCollide, figure, obj] = run(obj, robot, wall, time, doDraw)
+        function [robot, walls, path, didCollide, figure, obj] = run(obj, robot, walls, path, time, doDraw)
             robot = obj.robot;
             walls = obj.walls;
             didCollide = obj.didCollide;
