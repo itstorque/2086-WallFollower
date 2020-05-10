@@ -1,50 +1,50 @@
 classdef Controller
-    
+
     properties
         robot
         walls
         time
         didCollide
     end
-    
+
 %     methods (Abstract)
 %         canDrive = canDrive(obj);
 %         path = generatePath(obj);
 %         pF = algorithim(obj, robot);
 %         DeltaTheta = plant(obj,pF);
 %     end
-    
+
     methods ( Static )
         function obj = Controller()
             obj.didCollide = false;
             obj.time = 0;
         end
-        
-        function [robot, walls, path, didCollide, figure, obj] = run(obj)
+
+        function [robot, walls, path, didCollide, figure, obj] = run(obj, robot, walls, path, time, doDraw)
             robot = obj.robot;
             walls = obj.walls;
             didCollide = obj.didCollide;
             obj.time = 0;
-            
+
             if ~didCollide
-                
+
                 [left, front, right] = robot.splice(robot.findDistanceCloud(obj.robot, walls));
-                
+
                 if (robot.side == -1)
                     track = left;
                 else
                     track = right;
                 end
-                
+
                 error = average(mink(track, 10));
-                
+
                 error = error + robot.kfront*mink(front, 10);
-                
+
                 error = error*robot.side;
-                
+
                 v = 0.1;
                 steering_angle = PID(robot, error);
-                
+
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 k = plot(robot.pos(1), robot.pos(2), 'ro');
@@ -60,32 +60,32 @@ classdef Controller
 
                 h = quiver(robot.pos(1),robot.pos(2),head(1),head(2), 'MaxHeadSize', 5);
                 axis([-10  10    -10  10], 'square')
-                
+
                 robot.pos = robot.pos + head;
                 robot.theta = robot.theta + v*tan(steering_angle)/robot.length%robot.theta + robot.ackerman_noise(pi/90);
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
                 set(h,'xdata',robot.pos(1),'ydata',robot.pos(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
                 set(k,'xdata',robot.pos(1),'ydata',robot.pos(2))
                 pause(0.1)
-            
+
             end
 
         end
-        
+
         function [angle] = PID(obj, error)
-            
+
             error_int = sum(obj.errors(end-obj.int_lookup:end));
-            
+
             error_dv = sum(obj.errors(end) - obj.errors(end-obj.dv_lookup));
-            
+
             obj.errors = [obj.errors error];
-            
+
             angle = kp*error + ki*error_int + kd*error_dv;
-            
+
         end
-        
+
         function [robot, walls, path, didCollide, figure, obj] = check_collisions(obj, robot, head, walls)
-            
+
             walls = obj.walls;
 
             for wall_idx = 1:size(walls, 1)
@@ -114,8 +114,8 @@ classdef Controller
                 'COLLISION DETECTED'
                 obj.didCollide = true;
             end
-            
+
         end
-            
+
     end
 end
