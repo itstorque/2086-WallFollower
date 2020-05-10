@@ -1,4 +1,3 @@
-close
 ackerman_noise_factor = 4;
 ackerman_noise = @(angle) angle+ackerman_noise_factor*(rand()-0.5);
 
@@ -10,24 +9,21 @@ bot = BoxBot([0,0],25,v,1);
 head = [v*sin(bot.theta*pi/180) v*cos(bot.theta*pi/180)];
 
 objects = InitField([walls bot]);
-pause(1)
-"Changed Theta"
-objects(end).theta = -22;
-"Tried to Update Field"
-objects = UpdateField(objects);
-
+bot.theta = 130;
+UpdateField([walls bot]);
+%{
 for i = 0:10000
     bot = objects(end);
+    bot.pos = bot.pos + head;
     bot.theta = bot.theta + 180/pi*ackerman_noise(pi/90);
     head = [v*sin(bot.theta*180/pi) v*cos(bot.theta*180/pi)];
-    bot.pos = bot.pos + head;
     %set(h,'xdata',bot.pos(1),'ydata',bot.pos(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
     
     objects(end) = bot;
     objects = UpdateField(objects);
-    pause(0.5)
+    pause(0.1)
     coords = bot.pos;
-    %{
+
     %collision checking stuff
 
     for wall_idx = 1:size(walls, 1)
@@ -56,7 +52,7 @@ for i = 0:10000
         'COLLISION DETECTED'
         break
     end
-    %}
+
 end
 
 hold off
