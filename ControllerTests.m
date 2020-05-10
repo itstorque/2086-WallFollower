@@ -7,9 +7,10 @@ walls = [w1];
 
 v = 0.5;
 bot = BoxBot([0,0],25,v,1);
+path = Path([0,0]);
 head = [v*sin(bot.theta*pi/180) v*cos(bot.theta*pi/180)];
 
-objects = InitField([walls bot]);
+objects = InitField([walls path bot]);
 pause(1)
 "Changed Theta"
 objects(end).theta = -22;
@@ -20,7 +21,10 @@ for i = 0:10000
     bot = objects(end);
     bot.theta = bot.theta + 180/pi*ackerman_noise(pi/90);
     head = [v*sin(bot.theta*180/pi) v*cos(bot.theta*180/pi)];
-    bot.pos = bot.pos + head;
+    bot.pos = bot.pos + head
+    path = objects(end-1);
+    path = path.addPos(bot.pos);
+    objects(end-1) = path;
     %set(h,'xdata',bot.pos(1),'ydata',bot.pos(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
     
     objects(end) = bot;

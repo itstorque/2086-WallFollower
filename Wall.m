@@ -1,5 +1,5 @@
 classdef Wall < FieldObject
-    
+
     properties
         point1
         point2
@@ -8,7 +8,7 @@ classdef Wall < FieldObject
         y1
         y2
     end
-    
+
     methods
         function obj = Wall(x1,y1,x2,y2)
             obj.pos = 0.5*[(x1+x2),(y1+y2)];
@@ -19,16 +19,15 @@ classdef Wall < FieldObject
             obj.y1 = y1;
             obj.y2 = y2;
         end
-        
+
         function obj = drawInit(obj)
             hold on
-            obj.internalFigure = plot([obj.x1 obj.x2],[obj.y1 obj.y2],"b-");
+            obj.internalFigure = plot([obj.x1 obj.x2],[obj.y1 obj.y2],'b-');
             hold off
-            disp("Created internal wall figure");
+            disp('Created internal wall figure');
         end
-        
+
         function obj = drawUpdate(obj)
         end
     end
 end
-

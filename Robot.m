@@ -24,22 +24,23 @@ classdef Robot < FieldObject
             obj.theta = theta; %Angle, in degrees
             obj.velocity = velocity;
             obj.dTheta = dTheta; %Increment for distance cloud, in degrees
-            
+
             obj.errors = [];
 
             obj.ackerman_noise_factor = 4;
             obj.ackerman_noise = @(angle) angle+obj.ackerman_noise_factor*(rand()-0.5);
         end
 
-        function [distances] = findDistanceCloud(obj, walls)
+        function [distances] = findDistanceCloud(obj, walls, wallCount)
+            wallCount
             distances = [];
             for i = obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)
                 min = 1e300;
                 phi = i*pi/180;
                 c = cos(phi);
                 s = sin(phi);
-                for j = 1:length(walls)
-                    wall = walls(j);
+                for j = 1:wallCount
+                    wall = walls{1, j};
                     range = NaN;
                     [x,y] = intersections([wall.x1 wall.x2], [wall.y1,wall.y2], [obj.pos(1) (obj.pos(1)+c*1e15)], [obj.pos(2) (obj.pos(2)+s*1e15)],1);
                     if(~isempty(x))

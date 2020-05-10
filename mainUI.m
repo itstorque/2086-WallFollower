@@ -38,10 +38,15 @@ classdef mainUI < matlab.apps.AppBase
         clock;
         objs;
         sNode;
+        gNode;
         wallCount;
         wallFieldObjs;
         robot;
         axesScale = 10;
+
+        start_pos;
+        end_pos;
+        controller;
     end
 
     % Properties that correspond to apps with auto-reflow
@@ -57,7 +62,7 @@ classdef mainUI < matlab.apps.AppBase
             if (~app.configureModeActive)
                 app.sg = setupUI;
                 app.sg.setParentUI(app);
-                app.sg.setComponents(app.objs, app.sNode, app.wallCount);
+                app.sg.setComponents(app.objs, app.sNode, app.gNode, app.wallCount);
                 app.configureModeActive = true;
                 app.pause();
             end
@@ -214,12 +219,14 @@ classdef mainUI < matlab.apps.AppBase
 
             app.objs = {};
             app.sNode = {};
+            app.gNode = {};
             app.wallCount = 0;
 
             app.wallFieldObjs = {};
             vInit = 0; % Feel free to change
             dThetaInit = 1; % Feel free to change
-            app.robot; % Init robot
+            % app.robot; % Init robot
+            app.setupController();
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
@@ -311,6 +318,8 @@ classdef mainUI < matlab.apps.AppBase
             app.setTimeText(num2str(round(app.clock)));
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
+            app.plotGNode();
+            app.setupController();
 
             % Any other necessary reset functionality goes here:
 
@@ -319,21 +328,37 @@ classdef mainUI < matlab.apps.AppBase
 
         function loopFcn(app, ~, ~)
             % Whatever we need to loop while running = true goes here
+            'inside loop'
             cla(app.EnvAxes);
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
+            app.plotGNode();
             app.clock = app.clock + get(app.t, 'Period');
             app.setTimeText(num2str(round(app.clock)));
+            app.controller.runAlg(app.robot, app.wallFieldObjs, app.wallCount);
         end
 
 
-        function setComponents(app, newList, newSNode, newWallCount)
+        function setComponents(app, newList, newSNode, newGNode, newWallCount)
             % This function is called whenever a new environment is pushed
             % to the main UI from the environment configuration menu
             app.objs = newList;
             app.sNode = newSNode;
+            app.gNode = newGNode;
             app.wallCount = newWallCount;
             app.generateFieldObjs();
+        end
+
+        function setupController(app)
+            app.start_pos = cell2mat(app.sNode);
+            app.end_pos   = cell2mat(app.gNode);
+            if (size(app.start_pos) == [0 0] | size(app.end_pos) == [0 0])
+              'configure the environment'
+            else
+              v = app.end_pos - app.start_pos;
+              app.robot = BoxBot(app.start_pos, angle(v(1)+j*v(2)), 1, 0.01);
+              app.controller = Controller;
+            end
         end
 
 
@@ -360,6 +385,23 @@ classdef mainUI < matlab.apps.AppBase
                     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
                 rectangle(app.EnvAxes,'Position',[pos(1) - mr, pos(2) - mr, 2*mr, 2*mr], ...
                     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
+                hold(app.EnvAxes, 'off')
+            end
+        end
+
+
+        function plotGNode(app)
+            sz = size(app.gNode);
+            r = app.axesScale*0.05;
+            mr = r/1.5;
+            if sz(2) > 0
+                pos = cell2mat(app.gNode);
+                hold(app.EnvAxes, 'on')
+                plot(app.EnvAxes, pos(1), pos(2), 'r.', 'MarkerSize', 15, 'LineWidth', 2)
+                rectangle(app.EnvAxes,'Position',[pos(1) - r, pos(2) - r, 2*r, 2*r], ...
+                    'Curvature',[1, 1],'EdgeColor','k', 'LineWidth', 2)
+                rectangle(app.EnvAxes,'Position',[pos(1) - mr, pos(2) - mr, 2*mr, 2*mr], ...
+                    'Curvature',[1, 1],'EdgeColor','k', 'LineWidth', 2)
                 hold(app.EnvAxes, 'off')
             end
         end

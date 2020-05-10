@@ -52,7 +52,7 @@ classdef BoxBot < Robot
             obj.arrow = arrow(obj.pos,head,'Type','line');
         end
 
-        function [left, center, right] = splice(distances)
+        function [left, center, right] = splice(obj, distances)
             len = numel(distances);
             center = mean([distances(1:30) distances(331:360)]);
             left = mean(distances(31:150));

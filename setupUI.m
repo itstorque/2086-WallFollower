@@ -17,7 +17,7 @@ classdef setupUI < matlab.apps.AppBase
         EnvAxes               matlab.ui.control.UIAxes
     end
 
-    
+
     properties (Access = private)
         wallCount = 0;
         currentObj = {};
@@ -26,21 +26,21 @@ classdef setupUI < matlab.apps.AppBase
         objsLen = 0;
         sNode = {};
         gNode = {};
-        
+
         placeMode = 1;
         axesScale = 10;
         parentUI;
     end
-    
+
     methods (Access = private)
-        
+
         function plotCurrentObj(app)
             if app.currentObjLen > 0
                 currentObjPlotArray = cell2mat(app.currentObj);
                 plot(app.EnvAxes, currentObjPlotArray(1,:), currentObjPlotArray(2,:), 'ro-', 'LineWidth', 2);
             end
         end
-        
+
         function plotObjs(app)
             hold(app.EnvAxes, 'on');
             for i = 1:app.objsLen
@@ -49,7 +49,7 @@ classdef setupUI < matlab.apps.AppBase
             end
             hold(app.EnvAxes, 'off');
         end
-        
+
         function plotSNode(app)
             sz = size(app.sNode);
             r = app.axesScale*0.05;
@@ -65,7 +65,7 @@ classdef setupUI < matlab.apps.AppBase
                 hold(app.EnvAxes, 'off')
             end
         end
-        
+
         function plotGNode(app)
             sz = size(app.gNode);
             r = app.axesScale*0.05;
@@ -82,14 +82,14 @@ classdef setupUI < matlab.apps.AppBase
             end
         end
     end
-    
+
     methods (Access = public)
-        
+
         function setParentUI(app, parent)
             app.parentUI = parent;
-        end 
+        end
     end
-    
+
 
     % Callbacks that handle component events
     methods (Access = private)
@@ -126,7 +126,7 @@ classdef setupUI < matlab.apps.AppBase
 
         % Button pushed function: FinishObstacleButton
         function FinishObstacleButtonPushed(app, event)
-            if app.currentObjLen > 0 
+            if app.currentObjLen > 0
                 app.objsLen = app.objsLen + 1;
                 app.objs{1, app.objsLen} = cell2mat(app.currentObj);
                 app.currentObjLen = 0;
@@ -157,7 +157,7 @@ classdef setupUI < matlab.apps.AppBase
         % Button pushed function: PushButton
         function PushButtonPushed(app, event)
             % Do whatever you need to in order to push
-            app.parentUI.setComponents(app.objs, app.sNode, app.wallCount);
+            app.parentUI.setComponents(app.objs, app.sNode, app.gNode, app.wallCount);
             app.parentUI.reset();
             app.delete();
         end
@@ -166,7 +166,7 @@ classdef setupUI < matlab.apps.AppBase
         function UIFigureWindowButtonDown(app, event)
             mousePos = get(app.EnvAxes,'CurrentPoint');
             mousePos = mousePos(1, 1:2)';
-            
+
             if mousePos >= 0 & mousePos <= 10
                 if app.placeMode == 1 % Wall/obj place mode
                     if app.currentObjLen > 0
@@ -180,7 +180,7 @@ classdef setupUI < matlab.apps.AppBase
                             end
                         end
                     end
-                
+
                     app.currentObjLen = app.currentObjLen + 1;
                     app.currentObj{1, app.currentObjLen} = mousePos;
                 elseif app.placeMode == 2
@@ -188,7 +188,7 @@ classdef setupUI < matlab.apps.AppBase
                 elseif app.placeMode == 3
                     app.gNode{1, 1} = mousePos;
                 end
-                
+
                 app.EnvAxes.cla();
                 app.plotCurrentObj();
                 app.plotObjs();
@@ -196,7 +196,7 @@ classdef setupUI < matlab.apps.AppBase
                 app.plotGNode();
                 app.Walls0Label.Text = append('Walls: ',num2str(app.wallCount));
                 app.Objects0Label.Text = append('Objects: ',num2str(app.objsLen));
-            end 
+            end
         end
     end
 
@@ -323,11 +323,11 @@ classdef setupUI < matlab.apps.AppBase
             delete(app.UIFigure)
             app.parentUI.configureModeActive = false;
         end
-        
-        
-        function setComponents(app, newList, newSNode, newWallCount)
+
+        function setComponents(app, newList, newSNode, newGNode, newWallCount)
             app.objs = newList;
             app.sNode = newSNode;
+            app.gNode = newGNode;
             app.wallCount = newWallCount;
             [~, app.objsLen] = size(app.objs);
             app.plotObjs();
