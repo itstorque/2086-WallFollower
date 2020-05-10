@@ -4,14 +4,14 @@ classdef PointBot < Robot
     end
     
     methods
-        function obj = PointBot(pos,theta,vel)
-            obj = obj@Robot(pos,theta,vel,1);
+        function obj = PointBot(pos,theta,vel,app)
+            obj = obj@Robot(pos,theta,vel,1,app);
         end
         
         function obj = drawInit(obj)
-            hold on
+            hold(obj.app.EnvAxes, 'on')
             obj.internalFigure = plot(obj.pos(1),obj.pos(2),'r.o');
-            hold off
+            hold(obj.app.EnvAxes, 'off')
             disp("Created internal bot figure");
         end
         

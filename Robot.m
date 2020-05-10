@@ -1,9 +1,9 @@
 classdef Robot < FieldObject
 
     properties
-        dTheta = 0;
+        dTheta = 1;
         theta = pi/4;
-        velocity = 0.1;
+        velocity = 0.01;
         ackerman_noise_factor;
         ackerman_noise;
         errors = [];
@@ -22,10 +22,11 @@ classdef Robot < FieldObject
     end
 
     methods
-        function obj = Robot(pos,theta,velocity, dTheta)
+        function obj = Robot(pos,theta,velocity, dTheta,app)
+            obj = obj@FieldObject(app);
             obj.pos = pos;
             obj.theta = theta; %Angle, in degrees
-            obj.velocity = velocity;
+            obj.velocity = velocity*0.01;
             obj.dTheta = dTheta; %Increment for distance cloud, in degrees
 
             obj.errors = [];
@@ -34,9 +35,10 @@ classdef Robot < FieldObject
             obj.ackerman_noise = @(angle) angle+obj.ackerman_noise_factor*(rand()-0.5);
         end
 
-        function [distances] = findDistanceCloud(obj, walls, wallCount)
+        function [distances] = findDistanceCloud(obj, walls)
             wallCount = length(walls);
-            distances = [];
+            distances = zeros(1,numel(obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)));
+            k = 1;
             for i = obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)
                 min = 1e300;
                 phi = i*pi/180;
@@ -44,7 +46,6 @@ classdef Robot < FieldObject
                 s = sin(phi);
                 for j = 1:wallCount
                     wall = walls{1, j};
-                    range = NaN;
                     [x,y] = intersections([wall.x1 wall.x2], [wall.y1,wall.y2], [obj.pos(1) (obj.pos(1)+c*1e15)], [obj.pos(2) (obj.pos(2)+s*1e15)],1);
                     if(~isempty(x))
                         range = norm([x(1),y(1)]-obj.pos);
@@ -53,7 +54,11 @@ classdef Robot < FieldObject
                         end
                     end
                 end
-                distances = [distances min];
+                if abs(min) > 1e299
+                    min = 0;
+                end
+                distances(k) = min;
+                k = k + 1;
             end
         end
 

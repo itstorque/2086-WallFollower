@@ -20,13 +20,10 @@ classdef Controller
             obj.time = 0;
         end
 
-        function runAlg(obj, robot, walls, wallCount)
+        function [robot,path] = runAlg(obj, robot, walls, path, wallCount, plotBot)
 
             if ~obj.didCollide
-
-                cloud = robot.findDistanceCloud(walls, wallCount);
-
-                [left, front, right] = robot.splice(cloud);
+                [left, front, right] = robot.splice(walls);
 
                 if (robot.side == -1)
                     track = left;
@@ -34,23 +31,26 @@ classdef Controller
                     track = right;
                 end
 
-                error = mean(mink(track, 10));
+                track
 
-                error = error + robot.kfront*mink(front, 10);
+                error = 1 - mean(mink(track, 10));
+
+                % error = error + robot.kfront*mean(mink(front, 10));
 
                 error = error*robot.side;
 
-                v = 0.1;
+                v = robot.velocity;
                 steering_angle = obj.PID(robot, error);
 
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
-                robot.pos = robot.pos + head
+                robot.pos = robot.pos + head;
+                path = path.addPos(robot.pos);
                 robot.theta = robot.theta + v*tan(steering_angle)/robot.size(1);
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 obj.didCollide = false;
-                pause(0.1)
+                pause(0.01)
 
             end
 
@@ -63,7 +63,7 @@ classdef Controller
             if (length(robot.errors) > 2)
               error_dv = sum(robot.errors(end) - robot.errors(max(1,end-robot.dv_lookup)))/10;
             else
-              error_dv = 0
+              error_dv = 0;
             end
 
             robot.errors = [robot.errors error];

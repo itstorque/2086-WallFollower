@@ -42,6 +42,7 @@ classdef mainUI < matlab.apps.AppBase
         wallCount;
         wallFieldObjs;
         robot;
+        path;
         axesScale = 10;
 
         start_pos;
@@ -304,7 +305,6 @@ classdef mainUI < matlab.apps.AppBase
             app.RunButton.BackgroundColor = [0.5608 1 0.5608];
             app.RunButton.Text = 'Run';
             stop(app.t);
-
             % Any other necessary pause functionality goes here:
 
         end
@@ -320,6 +320,8 @@ classdef mainUI < matlab.apps.AppBase
             app.plotSNode(); % Keep this
             app.plotGNode();
             app.setupController();
+            app.plotRobot();
+            app.plotPath();
 
             % Any other necessary reset functionality goes here:
 
@@ -328,16 +330,36 @@ classdef mainUI < matlab.apps.AppBase
 
         function loopFcn(app, ~, ~)
             % Whatever we need to loop while running = true goes here
-            'inside loop'
             cla(app.EnvAxes);
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
             app.plotGNode();
+            app.plotRobot();
+            app.plotPath();
             app.clock = app.clock + get(app.t, 'Period');
             app.setTimeText(num2str(round(app.clock)));
-            app.controller.runAlg(app.robot, app.wallFieldObjs, app.wallCount);
+            [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount);
         end
 
+        function plotRobot(app)
+            app.robot.app = app;
+            app.robot.drawUpdate();
+            %{
+            hold(app.EnvAxes, 'on')
+            pos = app.robot.pos;
+            plot(app.EnvAxes, pos(1), pos(2), 'g.', 'MarkerSize', 15, 'LineWidth', 2)
+            % rectangle(app.EnvAxes,'Position',[pos(1) - r, pos(2) - r, 2*r, 2*r], ...
+            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
+            % rectangle(app.EnvAxes,'Position',[pos(1) - mr, pos(2) - mr, 2*mr, 2*mr], ...
+            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
+            hold(app.EnvAxes, 'off')
+            %}
+        end
+        
+        function plotPath(app)
+            app.path.app = app;
+            app.path.drawUpdate();
+        end
 
         function setComponents(app, newList, newSNode, newGNode, newWallCount)
             % This function is called whenever a new environment is pushed
@@ -355,9 +377,15 @@ classdef mainUI < matlab.apps.AppBase
             if (size(app.start_pos) == [0 0] | size(app.end_pos) == [0 0])
               'configure the environment'
             else
-              v = app.end_pos - app.start_pos;
-              app.robot = BoxBot(app.start_pos, angle(v(1)+j*v(2)), 1, 0.01);
-              app.controller = Controller;
+                v = app.end_pos - app.start_pos;
+                app.robot = BoxBot(app.start_pos', angle(v(1)+j*v(2)), 1, 1,app);
+                app.path = Path(app.robot.pos,app);
+                app.controller = Controller;
+                
+                app.robot.app = app;
+                app.robot.drawInit();
+                app.path.app = app;
+                app.path.drawInit();
             end
         end
 
@@ -417,7 +445,7 @@ classdef mainUI < matlab.apps.AppBase
                 for j = 1:thisLen - 1
                     p1 = thisObj(:, j);
                     p2 = thisObj(:, j + 1);
-                    app.wallFieldObjs{1, indx} = Wall(p1(1), p1(2), p2(1), p2(2));
+                    app.wallFieldObjs{1, indx} = Wall(p1(1), p1(2), p2(1), p2(2),app);
                     indx = indx + 1;
                 end
             end
