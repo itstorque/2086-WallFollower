@@ -170,7 +170,7 @@ classdef setupUI < matlab.apps.AppBase
         function PushButtonPushed(app, event)
             % Do whatever you need to in order to push
             if app.changesMade
-                app.parentUI.setComponents(app.objs, app.sNode, app.wallCount);
+                app.parentUI.setComponents(app.objs, app.sNode, app.gNode, app.wallCount);
                 app.parentUI.reset();
             end
             app.delete();
@@ -202,6 +202,7 @@ classdef setupUI < matlab.apps.AppBase
                     app.changesMade = true;
                 elseif app.placeMode == 3
                     app.gNode{1, 1} = mousePos; % Goal Node place mode
+                    app.changesMade = true;
                 end
                 
                 app.EnvAxes.cla();
@@ -340,13 +341,15 @@ classdef setupUI < matlab.apps.AppBase
         end
         
         
-        function setComponents(app, newList, newSNode, newWallCount)
+        function setComponents(app, newList, newSNode, newGNode, newWallCount)
             app.objs = newList;
             app.sNode = newSNode;
+            app.gNode = newGNode;
             app.wallCount = newWallCount;
             [~, app.objsLen] = size(app.objs);
             app.plotObjs();
             app.plotSNode();
+            app.plotGNode();
             app.Walls0Label.Text = append('Walls: ',num2str(app.wallCount));
             app.Objects0Label.Text = append('Objects: ',num2str(app.objsLen));
         end
