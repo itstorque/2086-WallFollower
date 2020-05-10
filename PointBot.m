@@ -10,7 +10,7 @@ classdef PointBot < Robot
         
         function obj = drawInit(obj)
             hold on
-            obj.internalFigure = plot(obj.pos(1),obj.pos(2),'ro');
+            obj.internalFigure = plot(obj.pos(1),obj.pos(2),'r.o');
             hold off
             disp("Created internal bot figure");
         end
