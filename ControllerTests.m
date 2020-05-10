@@ -22,6 +22,7 @@ for i = 0:10000
     bot.theta = bot.theta + 180/pi*ackerman_noise(pi/90);
     head = [v*sin(bot.theta*180/pi) v*cos(bot.theta*180/pi)];
     bot.pos = bot.pos + head
+    [left, center, right] = bot.splice(walls)
     path = objects(end-1);
     path = path.addPos(bot.pos);
     objects(end-1) = path;
