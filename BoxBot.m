@@ -10,13 +10,13 @@ classdef BoxBot < Robot
         arrowScale = 5;
         size;
     end
-    
+
     methods
         function obj = BoxBot(pos,theta,vel,size)
             obj = obj@Robot(pos,theta,vel,1);
             obj.size = size;
         end
-        
+
         function obj = drawInit(obj)
             hold on
             rhat = [cos(obj.theta*pi/180),sin(obj.theta*pi/180)];
@@ -33,9 +33,9 @@ classdef BoxBot < Robot
             head = obj.pos + obj.arrowScale*obj.velocity*rhat;
             obj.arrow = arrow(obj.pos,head,'Type','line');
             hold off
-            disp("Created internal bot figure");
+            disp('Created internal bot figure');
         end
-        
+
         function obj = drawUpdate(obj)
             xs = zeros(1,5);
             ys = zeros(1,5);
@@ -51,7 +51,7 @@ classdef BoxBot < Robot
             set(obj.arrow,'xdata',[],'ydata',[])
             obj.arrow = arrow(obj.pos,head,'Type','line');
         end
-        
+
         function [left, center, right] = splice(distances)
             len = numel(distances);
             center = mean([distances(1:30) distances(331:360)]);
@@ -60,4 +60,3 @@ classdef BoxBot < Robot
         end
     end
 end
-
