@@ -20,13 +20,10 @@ classdef Controller
             obj.time = 0;
         end
 
-        function robot = runAlg(obj, robot, walls, wallCount, plotBot)
+        function [robot,path] = runAlg(obj, robot, walls, path, wallCount, plotBot)
 
             if ~obj.didCollide
-
-                cloud = robot.findDistanceCloud(walls, wallCount);
-
-                [left, front, right] = robot.splice(cloud);
+                [left, front, right] = robot.splice(walls);
 
                 if (robot.side == -1)
                     track = left;
@@ -47,7 +44,8 @@ classdef Controller
 
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
-                robot.pos = robot.pos + head';
+                robot.pos = robot.pos + head;
+                path = path.addPos(robot.pos);
                 robot.theta = robot.theta + v*tan(steering_angle)/robot.size(1);
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 

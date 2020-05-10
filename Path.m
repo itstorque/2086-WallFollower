@@ -5,7 +5,8 @@ classdef Path < FieldObject
     end
     
     methods
-        function obj = Path(pos)
+        function obj = Path(pos,app)
+            obj = obj@FieldObject(app);
             obj.positions = [pos];
         end
         
@@ -15,15 +16,15 @@ classdef Path < FieldObject
         end
         
         function obj = drawInit(obj)
-            hold on
-            obj.internalFigure = plot(obj.positions(:,1),obj.positions(:,2),"g","LineWidth",1.3);
-            hold off
+            hold(obj.app.EnvAxes, 'on');
+            obj.internalFigure = plot(obj.app.EnvAxes,obj.positions(:,1),obj.positions(:,2),"g","LineWidth",1.3);
+            hold(obj.app.EnvAxes, 'off');
         end
         
         function obj = drawUpdate(obj)
-            hold on
+            hold(obj.app.EnvAxes, 'on');
             set(obj.internalFigure,'xdata',obj.positions(:,1),'ydata',obj.positions(:,2))
-            hold off
+            hold(obj.app.EnvAxes, 'off');
         end
         
     end
