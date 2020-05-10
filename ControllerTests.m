@@ -19,6 +19,7 @@ objects = UpdateField(objects);
 for i = 0:10000
     bot = objects(end);
     bot.theta = bot.theta + 180/pi*ackerman_noise(pi/90);
+    means = bot.splice(walls)
     head = [v*sin(bot.theta*180/pi) v*cos(bot.theta*180/pi)];
     bot.pos = bot.pos + head;
     %set(h,'xdata',bot.pos(1),'ydata',bot.pos(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
