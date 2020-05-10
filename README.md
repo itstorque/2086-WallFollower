@@ -57,7 +57,7 @@ corresponding to a distance of 1 meter.
 
 ## Requirements
 
-This program was developed on MATLAB 2019a and is intended for use on versions higher than that only. A lot of UI classes were built for 2019a+ and versions such as 2018b might not work with the software out of the box.
+This program was developed on MATLAB 2019b and is intended for use on versions higher than that only. A lot of UI classes were built for 2019b+ and versions such as 2018b or 2019a might not work with the software out of the box.
 
 ## Project Status
 

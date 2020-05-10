@@ -4,11 +4,11 @@ classdef BoxBot < Robot
         leftEnd = 150;
         rightStart = 210;
         rightEnd = 330;
-        centerStart = 330;
-        centerEnd = 30;
+        forwardStart = 330;
+        forwardEnd = 30;
         arrow;
         arrowScale = 5;
-        size;
+        size = [1, 1];
     end
 
     methods
@@ -52,13 +52,11 @@ classdef BoxBot < Robot
             obj.arrow = arrow(obj.pos,head,'Type','line');
         end
 
-        function [left, center, right] = splice(obj, walls)
-            distances = obj.findDistanceCloud(walls);
+        function [left, center, right] = splice(obj, distances)
             len = numel(distances);
-            
-            center = mean([distances(1:round(len*obj.centerEnd/360)) distances(round(len*obj.centerStart/360):end)]);
-            left = mean(distances(round(len*obj.leftStart/360):round(len*obj.leftEnd/360)));
-            right = mean(distances(round(len*obj.rightStart/360):round(len*obj.rightEnd/360)));
+            center = [distances(1:30) distances(331:360)];
+            left = distances(31:150);
+            right = distances(211:330);
         end
     end
 end
