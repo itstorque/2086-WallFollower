@@ -4,7 +4,7 @@ classdef PointBot < Robot
     end
     
     methods
-        function obj = PointBot(pos,theta,vel);
+        function obj = PointBot(pos,theta,vel)
             obj = obj@Robot(pos,theta,vel,1);
         end
         
@@ -20,9 +20,9 @@ classdef PointBot < Robot
         end
         
         function [left, center, right] = splice(distances)
-            center = mean([distnaces(1:30) distances(331:360)]);
-            left = mean(distnaces(31:150));
-            right = mean(distnaces(211:330));
+            center = mean([distances(1:30) distances(331:360)]);
+            left = mean(distances(31:150));
+            right = mean(distances(211:330));
         end
     end
 end

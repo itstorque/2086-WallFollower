@@ -6,6 +6,12 @@ classdef Robot < FieldObject
         velocity = 0.1;
         ackerman_noise_factor;
         ackerman_noise;
+        errors = [];
+        side = -1; %-1 for left, 1 for right
+        kfront = 2;
+        kp = 0.8;
+        kd = 0.1;
+        ki = 0.01;
     end
 
     methods (Abstract)
@@ -18,6 +24,8 @@ classdef Robot < FieldObject
             obj.theta = theta; %Angle, in degrees
             obj.velocity = velocity;
             obj.dTheta = dTheta; %Increment for distance cloud, in degrees
+            
+            obj.errors = [];
 
             obj.ackerman_noise_factor = 4;
             obj.ackerman_noise = @(angle) angle+obj.ackerman_noise_factor*(rand()-0.5);
@@ -34,7 +42,7 @@ classdef Robot < FieldObject
                     wall = walls(j);
                     range = NaN;
                     [x,y] = intersections([wall.x1 wall.x2], [wall.y1,wall.y2], [obj.pos(1) (obj.pos(1)+c*1e15)], [obj.pos(2) (obj.pos(2)+s*1e15)],1);
-                    if(length(x)>0)
+                    if(~isempty(x))
                         range = norm([x(1),y(1)]-obj.pos);
                         if(range < min)
                             min = range;
