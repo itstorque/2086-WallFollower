@@ -202,6 +202,7 @@ classdef setupUI < matlab.apps.AppBase
                     app.changesMade = true;
                 elseif app.placeMode == 3
                     app.gNode{1, 1} = mousePos; % Goal Node place mode
+                    app.changesMade = true;
                 end
 
                 app.EnvAxes.cla();
@@ -339,7 +340,6 @@ classdef setupUI < matlab.apps.AppBase
             app.parentUI.configureModeActive = false;
         end
 
-
         function setComponents(app, newList, newSNode, newGNode, newWallCount)
             app.objs = newList;
             app.sNode = newSNode;
@@ -348,6 +348,7 @@ classdef setupUI < matlab.apps.AppBase
             [~, app.objsLen] = size(app.objs);
             app.plotObjs();
             app.plotSNode();
+            app.plotGNode();
             app.Walls0Label.Text = append('Walls: ',num2str(app.wallCount));
             app.Objects0Label.Text = append('Objects: ',num2str(app.objsLen));
         end
