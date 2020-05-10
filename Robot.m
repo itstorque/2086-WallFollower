@@ -1,9 +1,9 @@
 classdef Robot < FieldObject
 
     properties
-        dTheta = 0;
+        dTheta = 1;
         theta = pi/4;
-        velocity = 0.1;
+        velocity = 0.01;
         ackerman_noise_factor;
         ackerman_noise;
         errors = [];
@@ -25,7 +25,7 @@ classdef Robot < FieldObject
         function obj = Robot(pos,theta,velocity, dTheta)
             obj.pos = pos;
             obj.theta = theta; %Angle, in degrees
-            obj.velocity = velocity;
+            obj.velocity = velocity*0.01;
             obj.dTheta = dTheta; %Increment for distance cloud, in degrees
 
             obj.errors = [];
@@ -54,6 +54,7 @@ classdef Robot < FieldObject
                     end
                 end
                 distances = [distances min];
+                distances = distances./max(distances);
             end
         end
 

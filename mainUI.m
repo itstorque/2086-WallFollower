@@ -320,6 +320,7 @@ classdef mainUI < matlab.apps.AppBase
             app.plotSNode(); % Keep this
             app.plotGNode();
             app.setupController();
+            app.plotRobot();
 
             % Any other necessary reset functionality goes here:
 
@@ -328,16 +329,26 @@ classdef mainUI < matlab.apps.AppBase
 
         function loopFcn(app, ~, ~)
             % Whatever we need to loop while running = true goes here
-            'inside loop'
             cla(app.EnvAxes);
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
             app.plotGNode();
+            app.plotRobot();
             app.clock = app.clock + get(app.t, 'Period');
             app.setTimeText(num2str(round(app.clock)));
-            app.controller.runAlg(app.robot, app.wallFieldObjs, app.wallCount);
+            app.robot = app.controller.runAlg(app.robot, app.wallFieldObjs, app.wallCount);
         end
 
+        function plotRobot(app)
+            hold(app.EnvAxes, 'on')
+            pos = app.robot.pos;
+            plot(app.EnvAxes, pos(1), pos(2), 'g.', 'MarkerSize', 15, 'LineWidth', 2)
+            % rectangle(app.EnvAxes,'Position',[pos(1) - r, pos(2) - r, 2*r, 2*r], ...
+            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
+            % rectangle(app.EnvAxes,'Position',[pos(1) - mr, pos(2) - mr, 2*mr, 2*mr], ...
+            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
+            hold(app.EnvAxes, 'off')
+        end
 
         function setComponents(app, newList, newSNode, newGNode, newWallCount)
             % This function is called whenever a new environment is pushed
