@@ -219,7 +219,8 @@ classdef mainUI < matlab.apps.AppBase
             app.wallFieldObjs = {};
             vInit = 0; % Feel free to change
             dThetaInit = 1; % Feel free to change
-            app.robot; % Init robot
+            % app.robot; % Init robot
+            app.setupController();
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
@@ -311,6 +312,7 @@ classdef mainUI < matlab.apps.AppBase
             app.setTimeText(num2str(round(app.clock)));
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
+            app.setupController();
 
             % Any other necessary reset functionality goes here:
 
@@ -324,6 +326,7 @@ classdef mainUI < matlab.apps.AppBase
             app.plotSNode(); % Keep this
             app.clock = app.clock + get(app.t, 'Period');
             app.setTimeText(num2str(round(app.clock)));
+            app.controller.run(app.robot, cell2mat(app.wallFieldObjs))
         end
 
 
@@ -334,6 +337,18 @@ classdef mainUI < matlab.apps.AppBase
             app.sNode = newSNode;
             app.wallCount = newWallCount;
             app.generateFieldObjs();
+        end
+
+        function setupController(app)
+            try
+              app.start = cell2mat(app.sNode)
+              app.end   = cell2mat(app.gNode)
+              v = app.end - app.start;
+              app.robot = BoxBot(app.start, angle(v(1)+j*v(2)), 1, 0.01);
+              app.controller = Controller;
+            catch
+              'Configure Environment'
+            end
         end
 
 
