@@ -7,7 +7,7 @@ classdef Robot < FieldObject
         ackerman_noise_factor;
         ackerman_noise;
         errors = [];
-        side = -1; %-1 for left, 1 for right
+        side = -1; % 1 for left, -1 for right
         kfront = 0.5;
         kp = 0.8;
         kd = 0.2;
@@ -40,8 +40,9 @@ classdef Robot < FieldObject
             distances = zeros(1,numel(obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)));
             k = 1;
             warning('off','MATLAB:nearlySingularMatrix');
-            for i = obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)
+            for i = obj.theta*180/pi:obj.dTheta:(360+obj.theta*180/pi-obj.dTheta)
                 min = 1e300;
+                i = 90 - i;
                 phi = i*pi/180;
                 c = cos(phi);
                 s = sin(phi);
@@ -61,6 +62,9 @@ classdef Robot < FieldObject
                 distances(k) = min;
                 k = k + 1;
             end
+            
+            distances(distances==0) = 10;
+            
         end
 
     end

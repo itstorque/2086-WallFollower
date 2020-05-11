@@ -27,7 +27,7 @@ classdef Controller
 
                 % Based on the side the robot is tracking, choose the LIDAR
                 % cloud spliced that corresponds to that wall
-                if (robot.side == 1)
+                if (robot.side == -1)
                     track = left;
                 else
                     track = right;
@@ -36,7 +36,7 @@ classdef Controller
                 % Offset the desired position to be 1 coordinate away from the
                 % wall, st. the robot ideally has 0 error moving along a straight
                 % line away from the object.
-                error = 1 - mean(mink(track, 10));
+                error = 1 - mean(mink(track, 10))
 
                 front_dist = mean(mink(front, 10));
 
@@ -63,6 +63,14 @@ classdef Controller
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 path = path.addPos(robot.pos); %update path
+                
+                while (robot.theta > 2*pi)
+                    robot.theta = robot.theta - 2*pi;
+                end
+                
+                while (robot.theta < 0)
+                    robot.theta = robot.theta + 2*pi;
+                end
 
                 % always false so we can get always gat a path even post a collision
                 obj.didCollide = false;

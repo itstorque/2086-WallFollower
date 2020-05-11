@@ -1,7 +1,7 @@
 classdef BoxBot < Robot
     properties
         leftStart = 10;%30
-        leftEnd = 60;%150
+        leftEnd = 150;%150
         rightStart = 300;%210
         rightEnd = 350;%330
         centerStart = 358;%330
