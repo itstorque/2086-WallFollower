@@ -3,7 +3,7 @@ function [x0,y0,iout,jout] = intersections(x1,y1,x2,y2,robust)
 %Douglas Schwarz (2020). Fast and Robust Curve Intersections
 %(https://www.mathworks.com/matlabcentral/fileexchange/11837-fast-and-robust-curve-intersections), 
 %MATLAB Central File Exchange. Retrieved April 26, 2020.
-%
+%Used to calculate intersections and collisions.
 %
 %INTERSECTIONS Intersections of curves.
 %   Computes the (x,y) locations where two curves intersect.  The curves
