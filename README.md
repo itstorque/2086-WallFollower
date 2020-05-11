@@ -1,4 +1,5 @@
 # 2086-WallFollower
+[Report documenting our work and results](https://www.overleaf.com/read/zbrfjkpjqtcb)
 
 This is a MATLAB project that simulates a 2D robot with LIDAR as an extroceptive
 input and applies a wall following PID algorithm to reach an end desired position.
