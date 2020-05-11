@@ -1,11 +1,11 @@
 classdef BoxBot < Robot
     properties
-        leftStart = 30;
-        leftEnd = 150;
-        rightStart = 210;
-        rightEnd = 330;
-        centerStart = 330;
-        centerEnd = 30;
+        leftStart = 10;%30
+        leftEnd = 60;%150
+        rightStart = 300;%210
+        rightEnd = 350;%330
+        centerStart = 358;%330
+        centerEnd = 2;%30
         arrow;
         arrowScale = 5;
         size = [1, 1];

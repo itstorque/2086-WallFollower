@@ -25,7 +25,7 @@ classdef Controller
             if ~obj.didCollide
                 [left, front, right] = robot.splice(walls);
 
-                if (robot.side == -1)
+                if (robot.side == 1)
                     track = left;
                 else
                     track = right;
@@ -33,11 +33,15 @@ classdef Controller
 
                 error = 1 - mean(mink(track, 10));
 
-                % error = error + robot.kfront*mean(mink(front, 10));
+                front_dist = mean(mink(front, 10));
+
+                if (front_dist < 2)
+                    error = error + (2 - robot.kfront*front_dist);
+                end
 
                 error = error*robot.side;
 
-                error = error/20;
+                error = error;
 
                 v = robot.velocity;
                 steering_angle = obj.PID(robot, error);

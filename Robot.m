@@ -8,10 +8,10 @@ classdef Robot < FieldObject
         ackerman_noise;
         errors = [];
         side = -1; %-1 for left, 1 for right
-        kfront = 2;
-        kp = 0.8;
-        kd = 0.1;
-        ki = 0.01;
+        kfront = 1;
+        kp = 0.6;
+        kd = 1.0;
+        ki = 0.001;
 
         int_lookup=10;
         dv_lookup=10;
