@@ -8,13 +8,13 @@ classdef Robot < FieldObject
         ackerman_noise;
         errors = [];
         side = -1; %-1 for left, 1 for right
-        kfront = 2;
+        kfront = 0.5;
         kp = 0.8;
-        kd = 0.1;
-        ki = 0.01;
+        kd = 0.2;
+        ki = 0.001;
 
-        int_lookup=10;
-        dv_lookup=10;
+        int_lookup=5;
+        dv_lookup=2;
     end
 
     methods (Abstract)
@@ -26,7 +26,7 @@ classdef Robot < FieldObject
             obj = obj@FieldObject(app);
             obj.pos = pos;
             obj.theta = theta; %Angle, in degrees
-            obj.velocity = velocity*0.01;
+            obj.velocity = velocity*0.1;
             obj.dTheta = dTheta; %Increment for distance cloud, in degrees
 
             obj.errors = [];
@@ -39,6 +39,7 @@ classdef Robot < FieldObject
             wallCount = length(walls);
             distances = zeros(1,numel(obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)));
             k = 1;
+            warning('off','MATLAB:nearlySingularMatrix');
             for i = obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)
                 min = 1e300;
                 phi = i*pi/180;

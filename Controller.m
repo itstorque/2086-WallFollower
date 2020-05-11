@@ -25,22 +25,26 @@ classdef Controller
             if ~obj.didCollide
                 [left, front, right] = robot.splice(walls);
 
-                if (robot.side == -1)
+                if (robot.side == 1)
                     track = left;
                 else
                     track = right;
                 end
 
-                track
-
                 error = 1 - mean(mink(track, 10));
 
-                % error = error + robot.kfront*mean(mink(front, 10));
+                front_dist = mean(mink(front, 10));
+
+                if (front_dist < 2)
+                    error = error + robot.kfront*(2 - front_dist);
+                end
 
                 error = error*robot.side;
 
                 v = robot.velocity;
-                steering_angle = obj.PID(robot, error);
+                [steering_angle, error] = obj.PID(robot, error);
+
+                robot.errors = [robot.errors error];
 
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
@@ -50,13 +54,12 @@ classdef Controller
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 obj.didCollide = false;
-                pause(0.01)
 
             end
 
         end
 
-        function angle = PID(obj, robot, error)
+        function [angle, error] = PID(obj, robot, error)
 
             error_int = sum(robot.errors(max(1,end-robot.int_lookup):end));
 
@@ -66,9 +69,15 @@ classdef Controller
               error_dv = 0;
             end
 
-            robot.errors = [robot.errors error];
+            error = robot.kp*error + robot.ki*error_int + robot.kd*error_dv;
 
-            angle = robot.kp*error + robot.ki*error_int + robot.kd*error_dv;
+            [error, error_dv, error_int]
+
+            angle = error;
+
+            if (abs(angle) > 0.25*pi)
+              angle = 0.25*pi*sign(angle);
+            end
 
         end
 

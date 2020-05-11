@@ -175,13 +175,49 @@ classdef mainUI < matlab.apps.AppBase
             app.ThetaLabel = uilabel(app.Panel);
             app.ThetaLabel.FontSize = 16;
             app.ThetaLabel.Position = [15 159 141 33];
-            app.ThetaLabel.Text = 'Theta: 0 deg';
+            app.ThetaLabel.Text = 'Theta: 0 rad';
 
             % Create TimeLabel
             app.TimeLabel = uilabel(app.Panel);
             app.TimeLabel.FontSize = 16;
             app.TimeLabel.Position = [15 127 141 33];
             app.TimeLabel.Text = 'Time: 0s';
+
+            % Create KP editor
+            kplbl = uilabel(app.Panel);
+            kplbl.FontSize = 16;
+            kplbl.Position = [15 95 40 33];
+            kplbl.Text = 'KP:';
+            kptxt = uieditfield(app.Panel, 'Position', [60 97 100 30]);%'ValueChangedFcn', @(txt,event) app.changeConstant(app.robot.kp, txt)
+            kptxt.ValueChangedFcn = createCallbackFcn(app, @(app, value) changeConstant(app, value, 'kp'), true);
+            kptxt.Value = '0.8';
+
+            % Create KI editor
+            kplbl = uilabel(app.Panel);
+            kplbl.FontSize = 16;
+            kplbl.Position = [15 63 40 33];
+            kplbl.Text = 'KI:';
+            kptxt = uieditfield(app.Panel, 'Position', [60 66 100 30]);%'ValueChangedFcn', @(txt,event) app.changeConstant(app.robot.kp, txt)
+            kptxt.ValueChangedFcn = createCallbackFcn(app, @(app, value) changeConstant(app, value, 'ki'), true);
+            kptxt.Value = '0.001';
+
+            % Create KD editor
+            kplbl = uilabel(app.Panel);
+            kplbl.FontSize = 16;
+            kplbl.Position = [15 31 40 33];
+            kplbl.Text = 'KD:';
+            kptxt = uieditfield(app.Panel, 'Position', [60 35 100 30]);%'ValueChangedFcn', @(txt,event) app.changeConstant(app.robot.kp, txt)
+            kptxt.ValueChangedFcn = createCallbackFcn(app, @(app, value) changeConstant(app, value, 'kd'), true);
+            kptxt.Value = '0.2';
+
+            % Create KFront editor
+            kplbl = uilabel(app.Panel);
+            kplbl.FontSize = 16;
+            kplbl.Position = [15 0 40 33];
+            kplbl.Text = 'KF:';
+            kptxt = uieditfield(app.Panel, 'Position', [60 2 100 30]);%'ValueChangedFcn', @(txt,event) app.changeConstant(app.robot.kp, txt)
+            kptxt.ValueChangedFcn = createCallbackFcn(app, @(app, value) changeConstant(app, value, 'kfront'), true);
+            kptxt.Value = '0.5';
 
             % Create ResetButton
             app.ResetButton = uibutton(app.LeftPanel, 'push');
@@ -212,7 +248,7 @@ classdef mainUI < matlab.apps.AppBase
             app.EnvAxes.Visible = 'on';
             disableDefaultInteractivity(app.EnvAxes);
 
-            app.tDelay = 0.05; % 0.05 sec.
+            app.tDelay = 0.5; % 0.05 sec.
             app.t = timer('Period', app.tDelay, 'ExecutionMode', 'fixedRate');
             app.t.TimerFcn = @(~, ~) app.loopFcn;
 
@@ -284,7 +320,7 @@ classdef mainUI < matlab.apps.AppBase
 
 
         function setThetaText(app,text)
-            app.ThetaLabel.Text = ['Theta: ', text, ' deg'];
+            app.ThetaLabel.Text = ['Theta: ', text, ' rad'];
         end
 
         function run(app)
@@ -319,12 +355,21 @@ classdef mainUI < matlab.apps.AppBase
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
             app.plotGNode();
-            app.setupController();
-            app.plotRobot();
-            app.plotPath();
+
+            app
+
+            % Resetting configurations manually
+            app.start_pos = cell2mat(app.sNode);
+            app.end_pos   = cell2mat(app.gNode);
+            v = app.end_pos - app.start_pos;
+            app.robot.pos = app.start_pos';
+            app.robot.theta = angle(v(2)+1i*v(1));
+            app.path = Path(app.robot.pos,app);
+
+            app.robot.draw();
+            app.path.draw();
 
             % Any other necessary reset functionality goes here:
-
         end
 
 
@@ -334,31 +379,15 @@ classdef mainUI < matlab.apps.AppBase
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
             app.plotGNode();
-            app.plotRobot();
-            app.plotPath();
-            app.clock = app.clock + get(app.t, 'Period');
-            app.setTimeText(num2str(round(app.clock)));
-            [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount);
-        end
 
-        function plotRobot(app)
-            app.robot.app = app;
-            app.robot.drawUpdate();
-            %{
-            hold(app.EnvAxes, 'on')
-            pos = app.robot.pos;
-            plot(app.EnvAxes, pos(1), pos(2), 'g.', 'MarkerSize', 15, 'LineWidth', 2)
-            % rectangle(app.EnvAxes,'Position',[pos(1) - r, pos(2) - r, 2*r, 2*r], ...
-            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
-            % rectangle(app.EnvAxes,'Position',[pos(1) - mr, pos(2) - mr, 2*mr, 2*mr], ...
-            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
-            hold(app.EnvAxes, 'off')
-            %}
-        end
-        
-        function plotPath(app)
-            app.path.app = app;
-            app.path.drawUpdate();
+            app.robot.draw();
+            app.path.draw();
+
+            app.clock = app.clock + get(app.t, 'Period');
+
+            app.setTimeText(num2str(round(app.clock)));
+            app.setThetaText(num2str(round(app.robot.theta, 3)));
+            [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount);
         end
 
         function setComponents(app, newList, newSNode, newGNode, newWallCount)
@@ -375,17 +404,25 @@ classdef mainUI < matlab.apps.AppBase
             app.start_pos = cell2mat(app.sNode);
             app.end_pos   = cell2mat(app.gNode);
             if (size(app.start_pos) == [0 0] | size(app.end_pos) == [0 0])
-              'configure the environment'
-            else
-                v = app.end_pos - app.start_pos;
-                app.robot = BoxBot(app.start_pos', angle(v(1)+j*v(2)), 1, 1,app);
+                v = 0;
+                app.robot = BoxBot([-10 -10], 0, 1, [0.5, 0.5], app);
                 app.path = Path(app.robot.pos,app);
                 app.controller = Controller;
-                
+
                 app.robot.app = app;
-                app.robot.drawInit();
+                app.robot.draw();
                 app.path.app = app;
-                app.path.drawInit();
+                app.path.draw();
+            else
+                v = app.end_pos - app.start_pos;
+                app.robot = BoxBot(app.start_pos', angle(v(2)+1i*v(1)), 1, [0.5, 0.5], app);
+                app.path = Path(app.robot.pos,app);
+                app.controller = Controller;
+
+                app.robot.app = app;
+                app.robot.draw();
+                app.path.app = app;
+                app.path.draw();
             end
         end
 
@@ -451,5 +488,15 @@ classdef mainUI < matlab.apps.AppBase
             end
             % Put the robot at sNode
         end
+
+
+        % Method for changing constants
+        function changeConstant(app, value, constantName)
+            evalstr = strcat('app.robot.', constantName, '=', value.Value, ';');
+            eval(evalstr);
+
+            app.robot
+        end
+
     end
 end
