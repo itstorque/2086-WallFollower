@@ -1,3 +1,7 @@
+% This file was used to test random functionality of the WallFollower
+% and aided in the merging of the many modules, however, it has no use
+% past testing only.
+
 close
 ackerman_noise_factor = 4;
 ackerman_noise = @(angle) angle+ackerman_noise_factor*(rand()-0.5);
@@ -27,7 +31,7 @@ for i = 0:10000
     path = path.addPos(bot.pos);
     objects(end-1) = path;
     %set(h,'xdata',bot.pos(1),'ydata',bot.pos(2),'udata',head(1),'vdata',head(2),'AutoScale','on', 'AutoScaleFactor', 10)
-    
+
     objects(end) = bot;
     objects = UpdateField(objects);
     pause(0.5)
