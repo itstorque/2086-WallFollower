@@ -8,15 +8,10 @@ classdef PointBot < Robot
             obj = obj@Robot(pos,theta,vel,1,app);
         end
 
-        function obj = drawInit(obj)
+        function obj = draw(obj)
             hold(obj.app.EnvAxes, 'on')
             obj.internalFigure = plot(obj.pos(1),obj.pos(2),'r.o');
             hold(obj.app.EnvAxes, 'off')
-            disp('Created internal bot figure');
-        end
-
-        function obj = drawUpdate(obj)
-            set(obj.internalFigure,'xdata',obj.pos(1),'ydata',obj.pos(2))
         end
 
         function [left, center, right] = splice(distances)

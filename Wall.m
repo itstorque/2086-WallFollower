@@ -21,14 +21,10 @@ classdef Wall < FieldObject
             obj.y2 = y2;
         end
 
-        function obj = drawInit(obj)
+        function obj = draw(obj)
             hold(obj.app.EnvAxes, 'on')
             obj.internalFigure = plot([obj.x1 obj.x2],[obj.y1 obj.y2],'b-');
             hold(obj.app.EnvAxes, 'off')
-            disp('Created internal wall figure');
-        end
-
-        function obj = drawUpdate(obj)
         end
     end
 end

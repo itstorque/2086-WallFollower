@@ -320,8 +320,8 @@ classdef mainUI < matlab.apps.AppBase
             app.plotSNode(); % Keep this
             app.plotGNode();
             app.setupController();
-            app.plotRobot();
-            app.plotPath();
+            app.robot.draw();
+            app.path.draw();
 
             % Any other necessary reset functionality goes here:
 
@@ -334,38 +334,15 @@ classdef mainUI < matlab.apps.AppBase
             app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
             app.plotSNode(); % Keep this
             app.plotGNode();
-            app.plotRobot();
-            app.plotPath();
-            app.clock = app.clock + get(app.t, 'Period');
 
-            hold(app.EnvAxes, 'on')
-            pos = app.robot.pos;
-            plot(app.EnvAxes, pos(1), pos(2), 'yx', 'MarkerSize', 15, 'LineWidth', 2)
-            hold(app.EnvAxes, 'off')
+            app.robot.draw();
+            app.path.draw();
+
+            app.clock = app.clock + get(app.t, 'Period');
 
             app.setTimeText(num2str(round(app.clock)));
             app.setThetaText(num2str(round(app.robot.theta, 3)));
             [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount);
-        end
-
-        function plotRobot(app)
-            app.robot.app = app;
-            % app.robot.drawUpdate();
-            %{
-            hold(app.EnvAxes, 'on')
-            pos = app.robot.pos;
-            plot(app.EnvAxes, pos(1), pos(2), 'g.', 'MarkerSize', 15, 'LineWidth', 2)
-            % rectangle(app.EnvAxes,'Position',[pos(1) - r, pos(2) - r, 2*r, 2*r], ...
-            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
-            % rectangle(app.EnvAxes,'Position',[pos(1) - mr, pos(2) - mr, 2*mr, 2*mr], ...
-            %     'Curvature',[1, 1],'EdgeColor','b', 'LineWidth', 2)
-            hold(app.EnvAxes, 'off')
-            %}
-        end
-
-        function plotPath(app)
-            app.path.app = app;
-            app.path.drawUpdate();
         end
 
         function setComponents(app, newList, newSNode, newGNode, newWallCount)
@@ -385,14 +362,14 @@ classdef mainUI < matlab.apps.AppBase
               'configure the environment'
             else
                 v = app.end_pos - app.start_pos;
-                app.robot = BoxBot(app.start_pos', angle(v(1)+1i*v(2)), 1, 1, app);
+                app.robot = BoxBot(app.start_pos', angle(v(1)+1i*v(2)), 1, [1 1], app);
                 app.path = Path(app.robot.pos,app);
                 app.controller = Controller;
 
                 app.robot.app = app;
-                app.robot.drawInit();
+                app.robot.draw();
                 app.path.app = app;
-                app.path.drawInit();
+                app.path.draw();
             end
         end
 
