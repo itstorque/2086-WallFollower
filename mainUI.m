@@ -175,7 +175,7 @@ classdef mainUI < matlab.apps.AppBase
             app.ThetaLabel = uilabel(app.Panel);
             app.ThetaLabel.FontSize = 16;
             app.ThetaLabel.Position = [15 159 141 33];
-            app.ThetaLabel.Text = 'Theta: 0 deg';
+            app.ThetaLabel.Text = 'Theta: 0 rad';
 
             % Create TimeLabel
             app.TimeLabel = uilabel(app.Panel);
@@ -212,7 +212,7 @@ classdef mainUI < matlab.apps.AppBase
             app.EnvAxes.Visible = 'on';
             disableDefaultInteractivity(app.EnvAxes);
 
-            app.tDelay = 0.05; % 0.05 sec.
+            app.tDelay = 0.5; % 0.05 sec.
             app.t = timer('Period', app.tDelay, 'ExecutionMode', 'fixedRate');
             app.t.TimerFcn = @(~, ~) app.loopFcn;
 
@@ -284,7 +284,7 @@ classdef mainUI < matlab.apps.AppBase
 
 
         function setThetaText(app,text)
-            app.ThetaLabel.Text = ['Theta: ', text, ' deg'];
+            app.ThetaLabel.Text = ['Theta: ', text, ' rad'];
         end
 
         function run(app)
@@ -337,13 +337,20 @@ classdef mainUI < matlab.apps.AppBase
             app.plotRobot();
             app.plotPath();
             app.clock = app.clock + get(app.t, 'Period');
+
+            hold(app.EnvAxes, 'on')
+            pos = app.robot.pos;
+            plot(app.EnvAxes, pos(1), pos(2), 'yx', 'MarkerSize', 15, 'LineWidth', 2)
+            hold(app.EnvAxes, 'off')
+
             app.setTimeText(num2str(round(app.clock)));
+            app.setThetaText(num2str(round(app.robot.theta, 3)));
             [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount);
         end
 
         function plotRobot(app)
             app.robot.app = app;
-            app.robot.drawUpdate();
+            % app.robot.drawUpdate();
             %{
             hold(app.EnvAxes, 'on')
             pos = app.robot.pos;
@@ -355,7 +362,7 @@ classdef mainUI < matlab.apps.AppBase
             hold(app.EnvAxes, 'off')
             %}
         end
-        
+
         function plotPath(app)
             app.path.app = app;
             app.path.drawUpdate();
@@ -378,10 +385,10 @@ classdef mainUI < matlab.apps.AppBase
               'configure the environment'
             else
                 v = app.end_pos - app.start_pos;
-                app.robot = BoxBot(app.start_pos', angle(v(1)+j*v(2)), 1, 1,app);
+                app.robot = BoxBot(app.start_pos', angle(v(1)+1i*v(2)), 1, 1, app);
                 app.path = Path(app.robot.pos,app);
                 app.controller = Controller;
-                
+
                 app.robot.app = app;
                 app.robot.drawInit();
                 app.path.app = app;

@@ -26,7 +26,7 @@ classdef Robot < FieldObject
             obj = obj@FieldObject(app);
             obj.pos = pos;
             obj.theta = theta; %Angle, in degrees
-            obj.velocity = velocity*0.01;
+            obj.velocity = velocity*0.1;
             obj.dTheta = dTheta; %Increment for distance cloud, in degrees
 
             obj.errors = [];
@@ -39,6 +39,7 @@ classdef Robot < FieldObject
             wallCount = length(walls);
             distances = zeros(1,numel(obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)));
             k = 1;
+            warning('off','MATLAB:nearlySingularMatrix');
             for i = obj.theta:obj.dTheta:(360+obj.theta-obj.dTheta)
                 min = 1e300;
                 phi = i*pi/180;

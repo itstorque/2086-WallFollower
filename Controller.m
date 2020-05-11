@@ -31,13 +31,13 @@ classdef Controller
                     track = right;
                 end
 
-                track
-
                 error = 1 - mean(mink(track, 10));
 
                 % error = error + robot.kfront*mean(mink(front, 10));
 
                 error = error*robot.side;
+
+                error = error/20; %scaling issues with rad vs dist
 
                 v = robot.velocity;
                 steering_angle = obj.PID(robot, error);
@@ -50,7 +50,6 @@ classdef Controller
                 head = [v*sin(robot.theta) v*cos(robot.theta)];
 
                 obj.didCollide = false;
-                pause(0.01)
 
             end
 
@@ -69,6 +68,10 @@ classdef Controller
             robot.errors = [robot.errors error];
 
             angle = robot.kp*error + robot.ki*error_int + robot.kd*error_dv;
+
+            if (abs(angle) > 0.25*pi)
+              angle = 0.25*pi*sign(angle);
+            end
 
         end
 
