@@ -22,7 +22,7 @@ classdef BoxBot < Robot
             rhat = [cos(obj.theta),sin(obj.theta)];
             xs = zeros(1,5);
             ys = zeros(1,5);
-            phi = obj.theta*180/pi;
+            phi = -obj.theta*180/pi;
             for i = 1:4
                 ri = obj.pos + obj.size.*[cos((phi+45+i*90)*pi/180),sin((phi+45+i*90)*pi/180)];
                 xs(i) = ri(1);

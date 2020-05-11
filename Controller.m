@@ -37,6 +37,8 @@ classdef Controller
 
                 error = error*robot.side;
 
+                error = error/20;
+
                 v = robot.velocity;
                 steering_angle = obj.PID(robot, error);
 

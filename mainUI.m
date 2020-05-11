@@ -362,7 +362,7 @@ classdef mainUI < matlab.apps.AppBase
               'configure the environment'
             else
                 v = app.end_pos - app.start_pos;
-                app.robot = BoxBot(app.start_pos', angle(v(1)+1i*v(2)), 1, [1 1], app);
+                app.robot = BoxBot(app.start_pos', angle(v(2)+1i*v(1)), 1, [1 1], app);
                 app.path = Path(app.robot.pos,app);
                 app.controller = Controller;
 
