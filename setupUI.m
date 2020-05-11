@@ -250,7 +250,7 @@ classdef setupUI < matlab.apps.AppBase
             % Create GoalNodeButton
             app.GoalNodeButton = uibutton(app.Panel, 'state');
             app.GoalNodeButton.ValueChangedFcn = createCallbackFcn(app, @GoalNodeButtonValueChanged, true);
-            app.GoalNodeButton.Text = 'Goal Node';
+            app.GoalNodeButton.Text = 'Initial Pose Node';
             app.GoalNodeButton.BackgroundColor = [0.902 0.902 0.902];
             app.GoalNodeButton.Position = [15 343 127 30];
 

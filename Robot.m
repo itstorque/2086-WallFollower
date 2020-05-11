@@ -7,7 +7,11 @@ classdef Robot < FieldObject
         ackerman_noise_factor;
         ackerman_noise;
         errors = [];
+        
+        % Change this side value to make the robot track the wall on the
+        % other side of it
         side = -1; % 1 for left, -1 for right
+        
         kfront = 0.5;
         kp = 0.8;
         kd = 0.2;

@@ -36,7 +36,7 @@ classdef Controller
                 % Offset the desired position to be 1 coordinate away from the
                 % wall, st. the robot ideally has 0 error moving along a straight
                 % line away from the object.
-                error = 1 - mean(mink(track, 10))
+                error = 1 - mean(mink(track, 10));
 
                 front_dist = mean(mink(front, 10));
 
