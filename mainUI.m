@@ -29,9 +29,12 @@ classdef mainUI < matlab.apps.AppBase
         RightPanel                  matlab.ui.container.Panel
         EnvAxes                     matlab.ui.control.UIAxes
 
+        % Booleans for the main UI's various functionality modes 
         running;
         paused;
         configureModeActive;
+        
+        % Clock, child UI, and fieldObjects to be used throughout the program
         sg;
         tDelay;
         t;
@@ -45,6 +48,7 @@ classdef mainUI < matlab.apps.AppBase
         path;
         axesScale = 10;
 
+        % Controller params and definition
         start_pos;
         end_pos;
         controller;
@@ -61,33 +65,34 @@ classdef mainUI < matlab.apps.AppBase
         % Value changed function: ConfigureEnvironmentButton
         function ConfigureEnvironmentButtonPushed(app, event)
             if (~app.configureModeActive)
-                app.sg = setupUI;
+                % What to do when the Configure Environment Button is pressed
+                app.sg = setupUI; % Create setupUI instance
                 app.sg.setParentUI(app);
-                app.sg.setComponents(app.objs, app.sNode, app.gNode, app.wallCount);
+                app.sg.setComponents(app.objs, app.sNode, app.gNode, app.wallCount); % Pass the current state of the environment to setupUI
                 app.configureModeActive = true;
                 app.pause();
             end
-            % This should reset the sim
         end
 
         % Button pushed function: RunButton
         function RunButtonPushed(app, event)
-
+            % What to do when the Run button is pressed
             if (app.running)
                 app.pause();
             else
                 app.run();
             end
-
         end
 
         % Button pushed function: ResetButton
         function ResetButtonPushed(app, event)
+            % What to do when the Reset button is pressed
             app.reset();
         end
 
         % Changes arrangement of the app based on UIFigure width
         function updateAppLayout(app, event)
+            % Controls how the UI layout changes when it is resized
             currentFigureWidth = app.UIFigure.Position(3);
             if(currentFigureWidth <= app.onePanelWidth)
                 % Change to a 2x1 grid
@@ -248,12 +253,15 @@ classdef mainUI < matlab.apps.AppBase
             app.EnvAxes.Visible = 'on';
             disableDefaultInteractivity(app.EnvAxes);
 
+            % Initialize timer object, which controls the UI's background loop
             app.tDelay = 0.5; % 0.05 sec.
             app.t = timer('Period', app.tDelay, 'ExecutionMode', 'fixedRate');
             app.t.TimerFcn = @(~, ~) app.loopFcn;
 
+            % Initialize clock, which tracks time elapsed since the beginning of the current run
             app.clock = 0;
 
+            % Initialize environment component lists as empty
             app.objs = {};
             app.sNode = {};
             app.gNode = {};
@@ -267,7 +275,8 @@ classdef mainUI < matlab.apps.AppBase
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
-
+            
+            % Initialize UI/loop state
             app.running = false;
             app.paused = false;
             app.configureModeActive = false;
@@ -296,6 +305,7 @@ classdef mainUI < matlab.apps.AppBase
             % Delete UIFigure when app is deleted
             delete(app.UIFigure)
             delete(app.sg)
+            % Stop and delete the timer when the app is deleted (neglecting to do so will result in unpleasant behavior)
             stop(app.t);
             delete(app.t);
         end
@@ -305,58 +315,55 @@ classdef mainUI < matlab.apps.AppBase
     methods (Access = public)
 
         function setXText(app,text)
+            % Update the text that displays the robot's x-coordinate
             app.XLabel.Text = ['X: ', text];
         end
 
 
         function setYText(app,text)
+            % Update the text that displays the robot's y-coordinate
             app.YLabel.Text = ['Y: ', text];
         end
 
 
         function setTimeText(app,text)
+            % Update the text that displays the current time elapsed
             app.TimeLabel.Text = ['Time: ', text, 's'];
         end
 
 
         function setThetaText(app,text)
+            % Update the text that displays the angle that the robot is facing
             app.ThetaLabel.Text = ['Theta: ', text, ' rad'];
         end
 
         function run(app)
-            % Do not delete:
-            app.running = true;
-            app.RunButton.BackgroundColor = [1 0.4608 0.4608];
+            % What to do when the Run button is pressed
+            app.running = true; % Update UI state
+            app.RunButton.BackgroundColor = [1 0.4608 0.4608]; % Change the color/text of the run button
             app.RunButton.Text = 'Pause';
-            start(app.t);
-
-            % Any other necessary run functionality goes here:
-
+            start(app.t); % Start the timer
         end
 
 
         function pause(app)
-            % Do not delete:
-            app.running = false;
-            app.RunButton.BackgroundColor = [0.5608 1 0.5608];
+            % What to do when the Pause button is pressed
+            app.running = false; % Update UI state
+            app.RunButton.BackgroundColor = [0.5608 1 0.5608]; % Change the color/text of the pause button
             app.RunButton.Text = 'Run';
-            stop(app.t);
-            % Any other necessary pause functionality goes here:
-
+            stop(app.t); % Stop the timer
         end
 
 
         function reset(app)
-            % Do not delete:
-            cla(app.EnvAxes);
-            app.pause();
-            app.clock = 0;
+            % What to do when the Reset button is pressed
+            cla(app.EnvAxes); % Clear the axes
+            app.pause(); % Pause the simulation
+            app.clock = 0; % Reset clock
             app.setTimeText(num2str(round(app.clock)));
-            app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
-            app.plotSNode(); % Keep this
-            app.plotGNode();
-
-            app
+            app.plotObjs(); % Plot walls
+            app.plotSNode(); % Plot starting node
+            app.plotGNode(); % Plot goal node
 
             % Resetting configurations manually
             app.start_pos = cell2mat(app.sNode);
@@ -376,28 +383,33 @@ classdef mainUI < matlab.apps.AppBase
         function loopFcn(app, ~, ~)
             % Whatever we need to loop while running = true goes here
             cla(app.EnvAxes);
-            app.plotObjs(); % FIELDOBJ PLOTTING FUNCTIONS GO HERE
-            app.plotSNode(); % Keep this
-            app.plotGNode();
+            app.plotObjs(); % Plot walls
+            app.plotSNode(); % Plot starting node
+            app.plotGNode(); % Plot goal node
 
+            % Redraw robot and path
             app.robot.draw();
             app.path.draw();
 
+            % Add the time elapsed since the last clock update to clock
             app.clock = app.clock + get(app.t, 'Period');
 
+            % Update data displays
             app.setTimeText(num2str(round(app.clock)));
             app.setThetaText(num2str(round(app.robot.theta, 3)));
-            [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount);
+            [app.robot,app.path] = app.controller.runAlg(app.robot, app.wallFieldObjs, app.path,app.wallCount); % Run the robot controller
         end
 
         function setComponents(app, newList, newSNode, newGNode, newWallCount)
             % This function is called whenever a new environment is pushed
             % to the main UI from the environment configuration menu
+            
+            % Update current environment state
             app.objs = newList;
             app.sNode = newSNode;
             app.gNode = newGNode;
             app.wallCount = newWallCount;
-            app.generateFieldObjs();
+            app.generateFieldObjs(); % Creates new wall fieldObjects based on the new environment, and updates sNode and gNode as needed
         end
 
         function setupController(app)
@@ -405,20 +417,24 @@ classdef mainUI < matlab.apps.AppBase
             app.end_pos   = cell2mat(app.gNode);
             if (size(app.start_pos) == [0 0] | size(app.end_pos) == [0 0])
                 v = 0;
+                % Get robot and path
                 app.robot = BoxBot([-10 -10], 0, 1, [0.5, 0.5], app);
                 app.path = Path(app.robot.pos,app);
                 app.controller = Controller;
 
+                % Send the main UI to the fieldObjects so they can be plotted on the UI's axes
                 app.robot.app = app;
                 app.robot.draw();
                 app.path.app = app;
                 app.path.draw();
             else
                 v = app.end_pos - app.start_pos;
+                % Get robot and path
                 app.robot = BoxBot(app.start_pos', angle(v(2)+1i*v(1)), 1, [0.5, 0.5], app);
                 app.path = Path(app.robot.pos,app);
                 app.controller = Controller;
 
+                % Send the main UI to the fieldObjects so they can be plotted on the UI's axes
                 app.robot.app = app;
                 app.robot.draw();
                 app.path.app = app;
@@ -428,9 +444,11 @@ classdef mainUI < matlab.apps.AppBase
 
 
         function plotObjs(app)
+            % Plot each object in objs
             hold(app.EnvAxes, 'on');
             [~, objsLen] = size(app.objs);
             for i = 1:objsLen
+                % Each object in app.objs is a 2 x K matrix of points, where the jth and (j+1)th elements are connected by a line (forming a wall)
                 thisObjPlotArray = app.objs{1, i};
                 plot(app.EnvAxes, thisObjPlotArray(1,:), thisObjPlotArray(2,:), 'b-', 'LineWidth', 2);
             end
@@ -439,6 +457,7 @@ classdef mainUI < matlab.apps.AppBase
 
 
         function plotSNode(app)
+            % Plot the starting node
             sz = size(app.sNode);
             r = app.axesScale*0.05;
             mr = r/1.5;
@@ -456,6 +475,7 @@ classdef mainUI < matlab.apps.AppBase
 
 
         function plotGNode(app)
+            % Plot the goal node
             sz = size(app.gNode);
             r = app.axesScale*0.05;
             mr = r/1.5;
@@ -480,7 +500,11 @@ classdef mainUI < matlab.apps.AppBase
                 thisObj = app.objs{1, i};
                 [~, thisLen] = size(thisObj);
                 for j = 1:thisLen - 1
-                    p1 = thisObj(:, j);
+                    % Each object in app.objs is a 2 x K matrix of points, where the jth and (j+1)th elements are connected by a line (forming a wall)
+                    % This loop iterates through objs, taking one matrix, and generating a wall fieldObject for each of the connections detailed above
+                    % (A matrix of K points creates K-1 field objects, since if the described object is a closed polygon, the starting point/ending point 
+                    % appears both at the beginning and end of the matrix)
+                    p1 = thisObj(:, j); 
                     p2 = thisObj(:, j + 1);
                     app.wallFieldObjs{1, indx} = Wall(p1(1), p1(2), p2(1), p2(2),app);
                     indx = indx + 1;
