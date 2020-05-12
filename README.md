@@ -7,6 +7,8 @@ The project will deliver a 2D visualization of a robot with self-optimizing
 parameters for a PID algorithm moving along a wall at a fixed distance offset
 in a user interactable field.
 
+![Screenshot Example](resources/example.png)
+
 ## Robot's Attributes
 
 ### Sensor Data
@@ -48,7 +50,9 @@ field more smooth.
 
 All physical objects in this simulation are considered field objects, whether they are
 the robot itself or walls in the field. These objects can be static or dynamic, and can
-have any polygonal shape. The LIDAR distances are measured incident to these objects.
+have any polygonal shape. The LIDAR distances are measured incident to these objects. The objects can be set up in the "Configure Environment" window which looks like this
+
+![Setup Window Screenshot](resources/setup_example.png)
 
 #### Visualization
 
