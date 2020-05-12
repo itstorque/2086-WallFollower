@@ -1,5 +1,5 @@
 # 2086-WallFollower
-[Report documenting our work and results](report.pdf)
+[Report documenting our work and results](resources/report.pdf)
 or the live
 [overleaf version](https://www.overleaf.com/read/zbrfjkpjqtcb)
 
