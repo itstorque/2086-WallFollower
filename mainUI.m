@@ -254,8 +254,8 @@ classdef mainUI < matlab.apps.AppBase
             disableDefaultInteractivity(app.EnvAxes);
 
             % Initialize timer object, which controls the UI's background loop
-            app.tDelay = 0.5; % 0.05 sec.
-            app.t = timer('Period', app.tDelay, 'ExecutionMode', 'fixedRate');
+            app.tDelay = 0.05; % 0.05 sec.
+            app.t = timer('Period', app.tDelay, 'ExecutionMode', 'fixedSpacing');
             app.t.TimerFcn = @(~, ~) app.loopFcn;
 
             % Initialize clock, which tracks time elapsed since the beginning of the current run

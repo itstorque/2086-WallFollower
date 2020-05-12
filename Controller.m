@@ -96,7 +96,7 @@ classdef Controller
 
             % we define the angle the robot moves at to be the same as the error,
             % since velocity is constant, the robot really has one degree of freedom.
-            angle = error;
+            angle = error
 
             % Max steering angle for the car, for more realistic physics
             if (abs(angle) > 0.25*pi)
