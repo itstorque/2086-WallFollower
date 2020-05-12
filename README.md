@@ -1,4 +1,5 @@
 # 2086-WallFollower
+[Report documenting our work and results](https://www.overleaf.com/read/zbrfjkpjqtcb)
 
 This is a MATLAB project that simulates a 2D robot with LIDAR as an extroceptive
 input and applies a wall following PID algorithm to reach an end desired position.
@@ -53,16 +54,15 @@ have any polygonal shape. The LIDAR distances are measured incident to these obj
 
 All [Field Objects](#field-objects) can be presented in a user-friendly manner by the
 visualization class. It showcases a field map with the distance of 1 coordinate
-corresponding to a distance of 1 meter.
+corresponding to a distance of 1 meter. To use, just run the GUI by creating an instance of mainUI. (Running that class).
 
 ## Requirements
 
-This program was developed on MATLAB 2019b and is intended for use on versions higher than that only. A lot of UI classes were built for 2019b+ and versions such as 2018b or 2019a might not work with the software out of the box.
+This program was developed on MATLAB 2019b and is intended for use on versions higher than that only. A lot of UI classes were built for 2019b+ and versions such as 2018b or 2019a might not work with the software out of the box. In short - we only support 2019b or newer.
 
 ## Project Status
 
-All needed abstract classes are complete. Some implementations still need to
-be implemented as separate files, but mostly, methods now need to be filled in.
+Complete, useful for some numerical experiments and simulation.
 
 ### Members
  - Levi Gershon
